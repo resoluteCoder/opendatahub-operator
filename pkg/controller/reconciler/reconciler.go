@@ -234,7 +234,7 @@ func (r *Reconciler) delete(ctx context.Context, res common.PlatformObject) erro
 		Client:     r.Client,
 		Controller: r,
 		Instance:   res,
-		Conditions: r.conditionsManagerFactory(res),
+		Conditions: r.conditionsManagerFactory(res.GetStatus()),
 		Release:    r.Release,
 		Manifests:  make([]types.ManifestInfo, 0),
 
@@ -276,7 +276,7 @@ func (r *Reconciler) apply(ctx context.Context, res common.PlatformObject) error
 		Client:     r.Client,
 		Controller: r,
 		Instance:   res,
-		Conditions: r.conditionsManagerFactory(res),
+		Conditions: r.conditionsManagerFactory(res.GetStatus()),
 		Release:    r.Release,
 		Manifests:  make([]types.ManifestInfo, 0),
 	}

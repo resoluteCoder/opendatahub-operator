@@ -188,7 +188,7 @@ type WithReleases interface {
 type PlatformObject interface {
 	client.Object
 	WithStatus
-	ConditionsAccessor
+	// ConditionsAccessor
 }
 
 type Platform string

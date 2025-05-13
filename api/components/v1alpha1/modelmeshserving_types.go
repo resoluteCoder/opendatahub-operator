@@ -97,13 +97,13 @@ func (c *ModelMeshServing) SetConditions(conditions []common.Condition) {
 	c.Status.SetConditions(conditions)
 }
 
-func (c *ModelMeshServing) GetReleaseStatus() *[]common.ComponentRelease {
-	return &c.Status.Releases
-}
+// func (c *ModelMeshServing) GetReleaseStatus() *[]common.ComponentRelease {
+// 	return &c.Status.Releases
+// }
 
-func (c *ModelMeshServing) SetReleaseStatus(releases []common.ComponentRelease) {
-	c.Status.Releases = releases
-}
+// func (c *ModelMeshServing) SetReleaseStatus(releases []common.ComponentRelease) {
+// 	c.Status.Releases = releases
+// }
 
 // DSCModelMeshServing contains all the configuration exposed in DSC instance for ModelMeshServing component
 type DSCModelMeshServing struct {

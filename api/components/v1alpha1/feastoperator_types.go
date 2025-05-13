@@ -85,13 +85,13 @@ func (f *FeastOperator) GetStatus() *common.Status {
 	return &f.Status.Status
 }
 
-func (c *FeastOperator) GetConditions() []common.Condition {
-	return c.Status.GetConditions()
-}
+// func (c *FeastOperator) GetConditions() []common.Condition {
+// 	return c.Status.GetConditions()
+// }
 
-func (c *FeastOperator) SetConditions(conditions []common.Condition) {
-	c.Status.SetConditions(conditions)
-}
+// func (c *FeastOperator) SetConditions(conditions []common.Condition) {
+// 	c.Status.SetConditions(conditions)
+// }
 
 // +kubebuilder:object:root=true
 

@@ -81,7 +81,7 @@ func TestDeploymentsAvailableActionNotReady(t *testing.T) {
 		Release:  common.Release{Name: cluster.OpenDataHub},
 	}
 
-	rr.Conditions = conditions.NewManager(rr.Instance, status.ConditionTypeReady)
+	rr.Conditions = conditions.NewManager(rr.Instance.GetStatus(), status.ConditionTypeReady)
 
 	err = action(ctx, &rr)
 	g.Expect(err).ShouldNot(HaveOccurred())
@@ -161,7 +161,7 @@ func TestDeploymentsAvailableActionReady(t *testing.T) {
 		Release:  common.Release{Name: cluster.OpenDataHub},
 	}
 
-	rr.Conditions = conditions.NewManager(rr.Instance, status.ConditionTypeReady)
+	rr.Conditions = conditions.NewManager(rr.Instance.GetStatus(), status.ConditionTypeReady)
 
 	err = action(ctx, &rr)
 	g.Expect(err).ShouldNot(HaveOccurred())
@@ -239,7 +239,7 @@ func TestDeploymentsAvailableReadyAutoSelector(t *testing.T) {
 		Release:  common.Release{Name: cluster.OpenDataHub},
 	}
 
-	rr.Conditions = conditions.NewManager(rr.Instance, status.ConditionTypeReady)
+	rr.Conditions = conditions.NewManager(rr.Instance.GetStatus(), status.ConditionTypeReady)
 
 	err = action(ctx, &rr)
 	g.Expect(err).ShouldNot(HaveOccurred())
@@ -317,7 +317,7 @@ func TestDeploymentsAvailableActionNotReadyNotFound(t *testing.T) {
 		Release:  common.Release{Name: cluster.OpenDataHub},
 	}
 
-	rr.Conditions = conditions.NewManager(rr.Instance, status.ConditionTypeReady)
+	rr.Conditions = conditions.NewManager(rr.Instance.GetStatus(), status.ConditionTypeReady)
 
 	err = action(ctx, &rr)
 	g.Expect(err).ShouldNot(HaveOccurred())

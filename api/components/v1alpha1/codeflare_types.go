@@ -74,13 +74,13 @@ func (c *CodeFlare) GetStatus() *common.Status {
 	return &c.Status.Status
 }
 
-func (c *CodeFlare) GetConditions() []common.Condition {
-	return c.Status.GetConditions()
-}
+// func (c *CodeFlare) GetConditions() []common.Condition {
+// 	return c.Status.GetConditions()
+// }
 
-func (c *CodeFlare) SetConditions(conditions []common.Condition) {
-	c.Status.SetConditions(conditions)
-}
+// func (c *CodeFlare) SetConditions(conditions []common.Condition) {
+// 	c.Status.SetConditions(conditions)
+// }
 
 func (c *CodeFlare) GetReleaseStatus() *[]common.ComponentRelease { return &c.Status.Releases }
 

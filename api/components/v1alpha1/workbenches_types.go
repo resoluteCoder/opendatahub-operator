@@ -88,13 +88,13 @@ func (c *Workbenches) GetStatus() *common.Status {
 	return &c.Status.Status
 }
 
-func (c *Workbenches) GetConditions() []common.Condition {
-	return c.Status.GetConditions()
-}
+// func (c *Workbenches) GetConditions() []common.Condition {
+// 	return c.Status.GetConditions()
+// }
 
-func (c *Workbenches) SetConditions(conditions []common.Condition) {
-	c.Status.SetConditions(conditions)
-}
+// func (c *Workbenches) SetConditions(conditions []common.Condition) {
+// 	c.Status.SetConditions(conditions)
+// }
 
 func (c *Workbenches) GetReleaseStatus() *[]common.ComponentRelease { return &c.Status.Releases }
 
