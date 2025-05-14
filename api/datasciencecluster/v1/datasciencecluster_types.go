@@ -156,6 +156,10 @@ type DataScienceCluster struct {
 	Status DataScienceClusterStatus `json:"status,omitempty"`
 }
 
+// func (dsc *DataScienceCluster) GetComponent(name string) {
+
+// }
+
 // +kubebuilder:object:root=true
 
 // DataScienceClusterList contains a list of DataScienceCluster.

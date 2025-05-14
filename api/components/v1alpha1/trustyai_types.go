@@ -89,19 +89,9 @@ func (c *TrustyAI) GetStatus() *common.Status {
 	return &c.Status.Status
 }
 
-func (c *TrustyAI) GetConditions() []common.Condition {
-	return c.Status.GetConditions()
+func (c *TrustyAI) GetReleaseStatus() *common.ComponentReleaseStatus {
+	return &c.Status.ComponentReleaseStatus
 }
-
-func (c *TrustyAI) SetConditions(conditions []common.Condition) {
-	c.Status.SetConditions(conditions)
-}
-
-// func (c *TrustyAI) GetReleaseStatus() *[]common.ComponentRelease { return &c.Status.Releases }
-
-// func (c *TrustyAI) SetReleaseStatus(releases []common.ComponentRelease) {
-// 	c.Status.Releases = releases
-// }
 
 // DSCTrustyAI contains all the configuration exposed in DSC instance for TrustyAI component
 type DSCTrustyAI struct {

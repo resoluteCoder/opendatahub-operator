@@ -38,7 +38,7 @@ func TestCheckPreConditions_ServerlessUnmanaged(t *testing.T) {
 	rr := types.ReconciliationRequest{
 		Client:     cli,
 		Instance:   &ks,
-		Conditions: conditions.NewManager(&ks, status.ConditionTypeReady),
+		Conditions: conditions.NewManager(ks.GetStatus(), status.ConditionTypeReady),
 	}
 
 	err = checkPreConditions(ctx, &rr)
@@ -69,7 +69,7 @@ func TestCheckPreConditions_ServiceMeshUnmanaged(t *testing.T) {
 		Client:     cli,
 		Instance:   &ks,
 		DSCI:       &dsci,
-		Conditions: conditions.NewManager(&ks, status.ConditionTypeReady),
+		Conditions: conditions.NewManager(ks.GetStatus(), status.ConditionTypeReady),
 	}
 
 	err = checkPreConditions(ctx, &rr)
@@ -102,7 +102,7 @@ func TestCheckPreConditions_ServiceMeshManaged_NoOperators(t *testing.T) {
 		Client:     cli,
 		Instance:   &ks,
 		DSCI:       &dsci,
-		Conditions: conditions.NewManager(&ks, status.ConditionTypeReady),
+		Conditions: conditions.NewManager(ks.GetStatus(), status.ConditionTypeReady),
 	}
 
 	err = checkPreConditions(ctx, &rr)
@@ -142,7 +142,7 @@ func TestCheckPreConditions_ServiceMeshManaged_NoServerlessOperator(t *testing.T
 		Client:     cli,
 		Instance:   &ks,
 		DSCI:       &dsci,
-		Conditions: conditions.NewManager(&ks, status.ConditionTypeReady),
+		Conditions: conditions.NewManager(ks.GetStatus(), status.ConditionTypeReady),
 	}
 
 	err = checkPreConditions(ctx, &rr)
@@ -182,7 +182,7 @@ func TestCheckPreConditions_ServiceMeshManaged_NoServiceMeshOperator(t *testing.
 		Client:     cli,
 		Instance:   &ks,
 		DSCI:       &dsci,
-		Conditions: conditions.NewManager(&ks, status.ConditionTypeReady),
+		Conditions: conditions.NewManager(ks.GetStatus(), status.ConditionTypeReady),
 	}
 
 	err = checkPreConditions(ctx, &rr)
@@ -225,7 +225,7 @@ func TestCheckPreConditions_ServiceMeshManaged_AllOperator(t *testing.T) {
 		Client:     cli,
 		Instance:   &ks,
 		DSCI:       &dsci,
-		Conditions: conditions.NewManager(&ks, status.ConditionTypeReady),
+		Conditions: conditions.NewManager(ks.GetStatus(), status.ConditionTypeReady),
 	}
 
 	err = checkPreConditions(ctx, &rr)
@@ -257,7 +257,7 @@ func TestCheckPreConditions_RawServiceConfig(t *testing.T) {
 		Client:     cli,
 		Instance:   &ksHeaded,
 		DSCI:       &dsci,
-		Conditions: conditions.NewManager(&ksHeaded, status.ConditionTypeReady),
+		Conditions: conditions.NewManager(ksHeaded.GetStatus(), status.ConditionTypeReady),
 	}
 
 	err = checkPreConditions(ctx, &rrHeaded)
@@ -276,7 +276,7 @@ func TestCheckPreConditions_RawServiceConfig(t *testing.T) {
 		Client:     cli,
 		Instance:   &ksHeaded,
 		DSCI:       &dsci,
-		Conditions: conditions.NewManager(&ksHeaded, status.ConditionTypeReady),
+		Conditions: conditions.NewManager(ksHeaded.GetStatus(), status.ConditionTypeReady),
 	}
 
 	err = checkPreConditions(ctx, &rrHeadless)
@@ -319,7 +319,7 @@ func TestCleanUpTemplatedResources_withAuthorino(t *testing.T) {
 		Client:     cli,
 		Instance:   &ksHeaded,
 		DSCI:       &dsci,
-		Conditions: conditions.NewManager(&ksHeaded, status.ConditionTypeReady),
+		Conditions: conditions.NewManager(ksHeaded.GetStatus(), status.ConditionTypeReady),
 	}
 
 	err = addTemplateFiles(ctx, &rrHeaded)
@@ -379,7 +379,7 @@ func TestCleanUpTemplatedResources_withoutAuthorino(t *testing.T) {
 		Client:     cli,
 		Instance:   &ksHeaded,
 		DSCI:       &dsci,
-		Conditions: conditions.NewManager(&ksHeaded, status.ConditionTypeReady),
+		Conditions: conditions.NewManager(ksHeaded.GetStatus(), status.ConditionTypeReady),
 	}
 
 	err = addTemplateFiles(ctx, &rrHeaded)

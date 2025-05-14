@@ -107,11 +107,3 @@ func (c *ModelController) GetDevFlags() *common.DevFlags { return nil }
 func (c *ModelController) GetStatus() *common.Status {
 	return &c.Status.Status
 }
-
-// func (c *ModelController) GetConditions() []common.Condition {
-// 	return c.Status.GetConditions()
-// }
-
-// func (c *ModelController) SetConditions(conditions []common.Condition) {
-// 	c.Status.SetConditions(conditions)
-// }

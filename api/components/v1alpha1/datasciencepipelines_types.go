@@ -75,20 +75,8 @@ func (c *DataSciencePipelines) GetStatus() *common.Status {
 	return &c.Status.Status
 }
 
-// func (c *DataSciencePipelines) GetConditions() []common.Condition {
-// 	return c.Status.GetConditions()
-// }
-
-// func (c *DataSciencePipelines) SetConditions(conditions []common.Condition) {
-// 	c.Status.SetConditions(conditions)
-// }
-
-func (c *DataSciencePipelines) GetReleaseStatus() *[]common.ComponentRelease {
-	return &c.Status.Releases
-}
-
-func (c *DataSciencePipelines) SetReleaseStatus(releases []common.ComponentRelease) {
-	c.Status.Releases = releases
+func (c *DataSciencePipelines) GetReleaseStatus() *common.ComponentReleaseStatus {
+	return &c.Status.ComponentReleaseStatus
 }
 
 // +kubebuilder:object:root=true

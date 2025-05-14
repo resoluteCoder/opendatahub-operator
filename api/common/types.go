@@ -167,6 +167,12 @@ type ComponentReleaseStatus struct {
 	Releases []ComponentRelease `yaml:"releases,omitempty" json:"releases,omitempty"`
 }
 
+func (crs *ComponentReleaseStatus) GetReleaseStatus() *[]ComponentRelease { return &crs.Releases }
+
+func (crs *ComponentReleaseStatus) SetReleaseStatus(releases []ComponentRelease) {
+	crs.Releases = releases
+}
+
 type WithStatus interface {
 	GetStatus() *Status
 }
@@ -181,14 +187,12 @@ type ConditionsAccessor interface {
 }
 
 type WithReleases interface {
-	GetReleaseStatus() *[]ComponentRelease
-	SetReleaseStatus(status []ComponentRelease)
+	GetReleaseStatus() *ComponentReleaseStatus
 }
 
 type PlatformObject interface {
 	client.Object
 	WithStatus
-	// ConditionsAccessor
 }
 
 type Platform string

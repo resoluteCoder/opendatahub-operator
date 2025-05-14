@@ -89,19 +89,9 @@ func (c *Ray) GetStatus() *common.Status {
 	return &c.Status.Status
 }
 
-func (c *Ray) GetConditions() []common.Condition {
-	return c.Status.GetConditions()
+func (c *Ray) GetReleaseStatus() *common.ComponentReleaseStatus {
+	return &c.Status.ComponentReleaseStatus
 }
-
-func (c *Ray) SetConditions(conditions []common.Condition) {
-	c.Status.SetConditions(conditions)
-}
-
-// func (c *Ray) GetReleaseStatus() *[]common.ComponentRelease { return &c.Status.Releases }
-
-// func (c *Ray) SetReleaseStatus(releases []common.ComponentRelease) {
-// 	c.Status.Releases = releases
-// }
 
 // DSCRay contains all the configuration exposed in DSC instance for Ray component
 type DSCRay struct {

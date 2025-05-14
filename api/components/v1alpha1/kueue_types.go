@@ -89,19 +89,9 @@ func (c *Kueue) GetStatus() *common.Status {
 	return &c.Status.Status
 }
 
-func (c *Kueue) GetConditions() []common.Condition {
-	return c.Status.GetConditions()
+func (c *Kueue) GetReleaseStatus() *common.ComponentReleaseStatus {
+	return &c.Status.ComponentReleaseStatus
 }
-
-func (c *Kueue) SetConditions(conditions []common.Condition) {
-	c.Status.SetConditions(conditions)
-}
-
-// func (c *Kueue) GetReleaseStatus() *[]common.ComponentRelease { return &c.Status.Releases }
-
-// func (c *Kueue) SetReleaseStatus(releases []common.ComponentRelease) {
-// 	c.Status.Releases = releases
-// }
 
 // DSCKueue contains all the configuration exposed in DSC instance for Kueue component
 type DSCKueue struct {

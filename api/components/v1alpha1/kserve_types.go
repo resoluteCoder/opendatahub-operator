@@ -127,21 +127,9 @@ func (c *Kserve) GetStatus() *common.Status {
 	return &c.Status.Status
 }
 
-func (c *Kserve) GetConditions() []common.Condition {
-	return c.Status.GetConditions()
+func (c *Kserve) GetReleaseStatus() *common.ComponentReleaseStatus {
+	return &c.Status.ComponentReleaseStatus
 }
-
-func (c *Kserve) SetConditions(conditions []common.Condition) {
-	c.Status.SetConditions(conditions)
-}
-
-// func (c *Kserve) GetReleaseStatus() *[]common.ComponentRelease {
-// 	return &c.Status.Releases
-// }
-
-// func (c *Kserve) SetReleaseStatus(releases []common.ComponentRelease) {
-// 	c.Status.Releases = releases
-// }
 
 // +kubebuilder:object:root=true
 

@@ -87,21 +87,9 @@ func (c *ModelRegistry) GetStatus() *common.Status {
 	return &c.Status.Status
 }
 
-func (c *ModelRegistry) GetConditions() []common.Condition {
-	return c.Status.GetConditions()
+func (c *ModelRegistry) GetReleaseStatus() *common.ComponentReleaseStatus {
+	return &c.Status.ComponentReleaseStatus
 }
-
-func (c *ModelRegistry) SetConditions(conditions []common.Condition) {
-	c.Status.SetConditions(conditions)
-}
-
-// func (c *ModelRegistry) GetReleaseStatus() *[]common.ComponentRelease {
-// 	return &c.Status.Releases
-// }
-
-// func (c *ModelRegistry) SetReleaseStatus(releases []common.ComponentRelease) {
-// 	c.Status.Releases = releases
-// }
 
 // +kubebuilder:object:root=true
 

@@ -328,7 +328,6 @@ func (r *Manager) Reset() {
 // The sorting is stable, ensuring consistent ordering when conditions have the same
 // priority.
 func (r *Manager) Sort() {
-	// conditions := r.accessor.GetConditions()
 	conditions := r.accessor.GetConditions()
 	if len(conditions) <= 1 {
 		return

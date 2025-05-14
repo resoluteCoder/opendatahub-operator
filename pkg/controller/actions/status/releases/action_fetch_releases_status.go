@@ -76,7 +76,7 @@ func (a *Action) run(ctx context.Context, rr *types.ReconciliationRequest) error
 	}
 
 	// Update the release status in the resource
-	obj.SetReleaseStatus(a.componentReleaseStatus)
+	obj.GetReleaseStatus().SetReleaseStatus(a.componentReleaseStatus)
 
 	return nil
 }

@@ -82,14 +82,6 @@ func (c *Dashboard) GetStatus() *common.Status {
 	return &c.Status.Status
 }
 
-// func (c *Dashboard) GetConditions() []common.Condition {
-// 	return c.Status.GetConditions()
-// }
-
-// func (c *Dashboard) SetConditions(conditions []common.Condition) {
-// 	c.Status.SetConditions(conditions)
-// }
-
 // +kubebuilder:object:root=true
 
 // DashboardList contains a list of Dashboard

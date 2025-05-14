@@ -89,21 +89,9 @@ func (c *TrainingOperator) GetStatus() *common.Status {
 	return &c.Status.Status
 }
 
-func (c *TrainingOperator) GetConditions() []common.Condition {
-	return c.Status.GetConditions()
+func (c *TrainingOperator) GetReleaseStatus() *common.ComponentReleaseStatus {
+	return &c.Status.ComponentReleaseStatus
 }
-
-func (c *TrainingOperator) SetConditions(conditions []common.Condition) {
-	c.Status.SetConditions(conditions)
-}
-
-// func (c *TrainingOperator) GetReleaseStatus() *[]common.ComponentRelease {
-// 	return &c.Status.Releases
-// }
-
-// func (c *TrainingOperator) SetReleaseStatus(releases []common.ComponentRelease) {
-// 	c.Status.Releases = releases
-// }
 
 // DSCTrainingOperator contains all the configuration exposed in DSC instance for TrainingOperator component
 type DSCTrainingOperator struct {
