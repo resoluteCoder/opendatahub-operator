@@ -88,7 +88,6 @@ func (s *componentHandler) NewComponentReconciler(ctx context.Context, mgr ctrl.
 			reconciler.WithPredicates(resources.Deleted()),
 		).
 		WatchesGVK(gvk.DashboardHardwareProfile, reconciler.Dynamic()).
-		WithAction(migrateHardwareProfiles).
 		WithAction(initialize).
 		WithAction(devFlags).
 		WithAction(setKustomizedParams).
@@ -114,6 +113,7 @@ func (s *componentHandler) NewComponentReconciler(ctx context.Context, mgr ctrl.
 		WithAction(gc.NewAction(
 			gc.WithUnremovables(gvk.OdhDashboardConfig),
 		)).
+		WithAction(migrateHardwareProfiles).
 		// declares the list of additional, controller specific conditions that are
 		// contributing to the controller readiness status
 		WithConditions(conditionTypes...).
