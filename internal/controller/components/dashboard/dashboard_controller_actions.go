@@ -7,12 +7,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-logr/logr"
 	routev1 "github.com/openshift/api/route/v1"
 	corev1 "k8s.io/api/core/v1"
+	k8serr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	componentApi "github.com/opendatahub-io/opendatahub-operator/v2/api/components/v1alpha1"
@@ -134,10 +137,9 @@ func updateStatus(ctx context.Context, rr *odhtypes.ReconciliationRequest) error
 
 	return nil
 }
-
 func migrateHardwareProfiles(ctx context.Context, rr *odhtypes.ReconciliationRequest) error {
 	dashboardHardwareProfiles := &unstructured.UnstructuredList{}
-	dashboardHardwareProfiles.SetGroupVersionKind(gvk.DashboardHardwareProfile.GroupVersion().WithKind("HardwareProfileList"))
+	dashboardHardwareProfiles.SetGroupVersionKind(gvk.DashboardHardwareProfile)
 
 	err := rr.Client.List(ctx, dashboardHardwareProfiles)
 	if err != nil {
@@ -146,45 +148,74 @@ func migrateHardwareProfiles(ctx context.Context, rr *odhtypes.ReconciliationReq
 
 	logger := log.FromContext(ctx)
 	for _, hwprofile := range dashboardHardwareProfiles.Items {
-		annotations := hwprofile.GetAnnotations()
-		if _, migrated := annotations["migrated-to"]; !migrated {
-			logger.Info("Found unmigrated dashboard HardwareProfile", "name", hwprofile.GetName())
+		var dashboardHardwareProfile infraAPI.DashboardHardwareProfile
 
-			var dashboardHardwareProfile infraAPI.DashboardHardwareProfile
-			if err := runtime.DefaultUnstructuredConverter.FromUnstructured(hwprofile.Object, &dashboardHardwareProfile); err != nil {
-				return fmt.Errorf("failed to convert dashboard hardware profile: %w", err)
-			}
+		// jsonBytes, err := json.Marshal(hwprofile.Object)
+		// if err != nil {
+		// 	return err
+		// }
 
-			if err = createInfraHardwareProfile(ctx, rr, &dashboardHardwareProfile); err != nil {
-				return fmt.Errorf("failed to create infra hardware profile: %w", err)
-			}
+		// json.Unmarshal(jsonBytes, &dashboardHardwareProfile)
 
-			if annotations == nil {
-				annotations = make(map[string]string)
-			}
-			annotations["migrated-to"] = fmt.Sprintf("hardwareprofiles.infrastructure.opendatahub.io/%s", hwprofile.GetName())
-			hwprofile.SetAnnotations(annotations)
-
-			if err := rr.Client.Update(ctx, &hwprofile); err != nil {
-				return fmt.Errorf("failed to update dashboard hardware profile with migration annotation: %w", err)
-			}
-			logger.Info("migrated completed for dashboard hardware profile", "name", hwprofile.GetName())
+		if err := runtime.DefaultUnstructuredConverter.FromUnstructured(hwprofile.Object, &dashboardHardwareProfile); err != nil {
+			return fmt.Errorf("failed to convert dashboard hardware profile: %w", err)
 		}
+		logger.Info(fmt.Sprintf("[HERE] dashboard item %s - %s", dashboardHardwareProfile.Namespace, dashboardHardwareProfile.Name))
+
+		infraHWP := &infraAPI.HardwareProfile{}
+		err := rr.Client.Get(ctx, client.ObjectKey{
+			Name:      dashboardHardwareProfile.Name,
+			Namespace: dashboardHardwareProfile.Namespace,
+		}, infraHWP)
+
+		// if err != nil && !k8serr.IsNotFound(err) {
+		// 	return fmt.Errorf("failed to convert get infrastructure hardware profile: %w", err)
+		// }
+
+		// err = reconcileInfraHardwareProfile(ctx, rr, logger, &dashboardHardwareProfile)
+		// if err != nil {
+		// 	return fmt.Errorf("failed to create or update existing infrastructure hardware profile: %w", err)
+		// }
+
+		// err = createInfraHardwareProfile(ctx, rr, logger, &dashboardHardwareProfile)
+		// if err != nil {
+		// 	return fmt.Errorf("failed to update existing infrastructure hardware profile: %w", err)
+		// }
+
+		if k8serr.IsNotFound(err) {
+			logger.Info("[HERE] did not find anything")
+			if err = createInfraHardwareProfile(ctx, rr, logger, &dashboardHardwareProfile); err != nil {
+				return fmt.Errorf("failed to create infrastructure hardware profile: %w", err)
+			}
+			continue
+		}
+
+		logger.Info(fmt.Sprintf("[HERE] found %s - %s", infraHWP.Namespace, infraHWP.Name))
+
+		if err != nil {
+			return fmt.Errorf("failed to get infrastructure hardware profile: %w", err)
+		}
+
+		err = updateInfraHardwareProfile(ctx, rr, logger, &dashboardHardwareProfile, infraHWP)
+		if err != nil {
+			return fmt.Errorf("failed to update existing infrastructure hardware profile: %w", err)
+		}
+
 	}
 
 	return nil
 }
 
-func createInfraHardwareProfile(ctx context.Context, rr *odhtypes.ReconciliationRequest, dashboardhwprofile *infraAPI.DashboardHardwareProfile) error {
+func createInfraHardwareProfile(ctx context.Context, rr *odhtypes.ReconciliationRequest, logger logr.Logger, dashboardhwprofile *infraAPI.DashboardHardwareProfile) error {
 	infraHardwareProfile := &infraAPI.HardwareProfile{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      dashboardhwprofile.Name,
 			Namespace: dashboardhwprofile.Namespace,
 			Annotations: map[string]string{
-				"migrated-from":               fmt.Sprintf("hardwareprofiles.dashboard.opendatahub.io/%s", dashboardhwprofile.Name),
-				"opendatahub.io/display-name": dashboardhwprofile.Spec.DisplayName,
-				"opendatahub.io/description":  dashboardhwprofile.Spec.Description,
-				"opendatahub.io/disabled":     strconv.FormatBool(!dashboardhwprofile.Spec.Enabled),
+				"opendatahub.io/migrated-from": fmt.Sprintf("hardwareprofiles.dashboard.opendatahub.io/%s", dashboardhwprofile.Name),
+				"opendatahub.io/display-name":  dashboardhwprofile.Spec.DisplayName,
+				"opendatahub.io/description":   dashboardhwprofile.Spec.Description,
+				"opendatahub.io/disabled":      strconv.FormatBool(!dashboardhwprofile.Spec.Enabled),
 			},
 		},
 		Spec: infraAPI.HardwareProfileSpec{
@@ -203,5 +234,65 @@ func createInfraHardwareProfile(ctx context.Context, rr *odhtypes.Reconciliation
 		return err
 	}
 
+	logger.Info("succesfully created infrastructure hardware profile", "name", infraHardwareProfile.GetName())
+	return nil
+}
+
+func updateInfraHardwareProfile(ctx context.Context, rr *odhtypes.ReconciliationRequest, logger logr.Logger, dashboardhwprofile *infraAPI.DashboardHardwareProfile, infrahwprofile *infraAPI.HardwareProfile) error {
+	if infrahwprofile.Annotations == nil {
+		infrahwprofile.Annotations = make(map[string]string)
+	}
+
+	infrahwprofile.Annotations["opendatahub.io/migrated-from"] = fmt.Sprintf("hardwareprofiles.dashboard.opendatahub.io/%s", dashboardhwprofile.Name)
+	infrahwprofile.Annotations["opendatahub.io/display-name"] = dashboardhwprofile.Spec.DisplayName
+	infrahwprofile.Annotations["opendatahub.io/description"] = dashboardhwprofile.Spec.Description
+	infrahwprofile.Annotations["opendatahub.io/disabled"] = strconv.FormatBool(!dashboardhwprofile.Spec.Enabled)
+
+	infrahwprofile.Spec.SchedulingSpec = &infraAPI.SchedulingSpec{
+		SchedulingType: infraAPI.NodeScheduling,
+		Node: &infraAPI.NodeSchedulingSpec{
+			NodeSelector: dashboardhwprofile.Spec.NodeSelector,
+			Tolerations:  dashboardhwprofile.Spec.Tolerations,
+		},
+	}
+	infrahwprofile.Spec.Identifiers = dashboardhwprofile.Spec.Identifiers
+
+	if err := rr.Client.Update(ctx, infrahwprofile); err != nil {
+		return fmt.Errorf("failed to update infrastructure hardware profile: %w", err)
+	}
+
+	logger.Info("successfully updated infrastructure hardware profile", "name", infrahwprofile.GetName())
+	return nil
+}
+
+func reconcileInfraHardwareProfile(ctx context.Context, rr *odhtypes.ReconciliationRequest, logger logr.Logger, dashboardhwprofile *infraAPI.DashboardHardwareProfile) error {
+	infraHardwareProfile := &infraAPI.HardwareProfile{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      dashboardhwprofile.Name,
+			Namespace: dashboardhwprofile.Namespace,
+			Annotations: map[string]string{
+				"opendatahub.io/migrated-from": fmt.Sprintf("hardwareprofiles.dashboard.opendatahub.io/%s", dashboardhwprofile.Name),
+				"opendatahub.io/display-name":  dashboardhwprofile.Spec.DisplayName,
+				"opendatahub.io/description":   dashboardhwprofile.Spec.Description,
+				"opendatahub.io/disabled":      strconv.FormatBool(!dashboardhwprofile.Spec.Enabled),
+			},
+		},
+		Spec: infraAPI.HardwareProfileSpec{
+			SchedulingSpec: &infraAPI.SchedulingSpec{
+				SchedulingType: infraAPI.NodeScheduling,
+				Node: &infraAPI.NodeSchedulingSpec{
+					NodeSelector: dashboardhwprofile.Spec.NodeSelector,
+					Tolerations:  dashboardhwprofile.Spec.Tolerations,
+				},
+			},
+			Identifiers: dashboardhwprofile.Spec.Identifiers,
+		},
+	}
+	_, err := controllerutil.CreateOrUpdate(ctx, rr.Client, infraHardwareProfile, func() error {
+		return nil
+	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
