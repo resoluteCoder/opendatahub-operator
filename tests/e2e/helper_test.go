@@ -9,6 +9,7 @@ import (
 
 	gTypes "github.com/onsi/gomega/types"
 	operatorv1 "github.com/openshift/api/operator/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 
@@ -157,6 +158,17 @@ func CreateDSCI(name, appNamespace, monitoringNamespace string) *dsciv1.DSCIniti
 					Name:              serviceMeshControlPlane,
 					Namespace:         serviceMeshNamespace,
 					MetricsCollection: serviceMeshMetricsCollection,
+				},
+			},
+			Gateway: &dsciv1.GatewayConfig{
+				OIDC: &dsciv1.OIDCClientConfig{
+					IssuerURL: "https://my-oidc-provider.example.com",
+					ClientSecretRef: &corev1.SecretKeySelector{
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: "gateway-oidc-client",
+						},
+						Key: "client-secret",
+					},
 				},
 			},
 		},

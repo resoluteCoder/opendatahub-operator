@@ -45,26 +45,6 @@ func TestServiceTypesConformToPlatformObject(t *testing.T) {
 			},
 		},
 		{
-			name: "Gateway",
-			instance: &Gateway{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "gateway",
-				},
-				Spec: GatewaySpec{
-					Namespace: "openshift-ingress",
-					Domain:    "example.com",
-					Certificates: GatewayCertSpec{
-						Type: "cert-manager",
-					},
-				},
-				Status: GatewayStatus{
-					Status: common.Status{
-						Phase: "Ready",
-					},
-				},
-			},
-		},
-		{
 			name: "Monitoring",
 			instance: &Monitoring{
 				ObjectMeta: metav1.ObjectMeta{

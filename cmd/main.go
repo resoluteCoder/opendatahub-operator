@@ -23,7 +23,6 @@ import (
 	"os"
 	"strings"
 
-	cmmeta "github.com/cert-manager/cert-manager/pkg/apis/meta/v1"
 	ocappsv1 "github.com/openshift/api/apps/v1" //nolint:importas //reason: conflicts with appsv1 "k8s.io/api/apps/v1"
 	buildv1 "github.com/openshift/api/build/v1"
 	configv1 "github.com/openshift/api/config/v1"
@@ -48,7 +47,6 @@ import (
 	rbacv1 "k8s.io/api/rbac/v1"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -101,7 +99,6 @@ import (
 	_ "github.com/opendatahub-io/opendatahub-operator/v2/internal/controller/components/workbenches"
 	_ "github.com/opendatahub-io/opendatahub-operator/v2/internal/controller/services/auth"
 	_ "github.com/opendatahub-io/opendatahub-operator/v2/internal/controller/services/certconfigmapgenerator"
-	_ "github.com/opendatahub-io/opendatahub-operator/v2/internal/controller/services/gateway"
 	_ "github.com/opendatahub-io/opendatahub-operator/v2/internal/controller/services/monitoring"
 	_ "github.com/opendatahub-io/opendatahub-operator/v2/internal/controller/services/secretgenerator"
 	_ "github.com/opendatahub-io/opendatahub-operator/v2/internal/controller/services/servicemesh"
@@ -436,51 +433,6 @@ func main() { //nolint:funlen,maintidx,gocyclo
 			setupLog.Error(err, "error scheduling DSC creation")
 			os.Exit(1)
 		}
-	}
-
-	var createDefaultGatewayFunc manager.RunnableFunc = func(ctx context.Context) error {
-		defaultGateway := &serviceApi.Gateway{
-			ObjectMeta: metav1.ObjectMeta{
-				Name: serviceApi.GatewayInstanceName,
-			},
-			Spec: serviceApi.GatewaySpec{
-				Namespace: "openshift-ingress",
-				Auth: serviceApi.GatewayAuthSpec{
-					Mode: "auto",
-				},
-				Certificates: serviceApi.GatewayCertSpec{
-					Type: "cert-manager",
-					IssuerRef: &cmmeta.ObjectReference{
-						Name: "selfsigned-cluster-issuer",
-						Kind: "ClusterIssuer",
-					},
-				},
-			},
-		}
-
-		existingGateway := &serviceApi.Gateway{}
-		err := setupClient.Get(ctx, client.ObjectKey{Name: serviceApi.GatewayInstanceName}, existingGateway)
-		if err != nil {
-			if client.IgnoreNotFound(err) == nil {
-				if createErr := setupClient.Create(ctx, defaultGateway); createErr != nil {
-					setupLog.Error(createErr, "unable to create default Gateway CR")
-					return createErr
-				}
-				setupLog.Info("Created default Gateway CR", "name", serviceApi.GatewayInstanceName)
-			} else {
-				setupLog.Error(err, "error checking for existing Gateway CR")
-				return err
-			}
-		} else {
-			setupLog.Info("Default Gateway CR already exists", "name", serviceApi.GatewayInstanceName)
-		}
-
-		return nil
-	}
-	err = mgr.Add(createDefaultGatewayFunc)
-	if err != nil {
-		setupLog.Error(err, "error scheduling Gateway creation")
-		os.Exit(1)
 	}
 
 	// TODO: to be removed: https://issues.redhat.com/browse/RHOAIENG-21080

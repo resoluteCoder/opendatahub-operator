@@ -244,6 +244,17 @@ rules:
   - cert-manager.io
   resources:
   - certificates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cert-manager.io
+  resources:
   - issuers
   verbs:
   - create
@@ -1071,24 +1082,12 @@ rules:
   - services.platform.opendatahub.io
   resources:
   - auths/status
-  - gateways/status
   - monitorings/status
   - servicemeshes/status
   verbs:
   - get
   - patch
   - update
-- apiGroups:
-  - services.platform.opendatahub.io
-  resources:
-  - gateways
-  verbs:
-  - create
-  - get
-  - list
-  - patch
-  - update
-  - watch
 - apiGroups:
   - serving.knative.dev
   resources:

@@ -53,6 +53,10 @@ type DSCInitializationSpec struct {
 	// This is not recommended to be used in production environment.
 	// +optional
 	DevFlags *DevFlags `json:"devFlags,omitempty"`
+	// Gateway configuration for OpenDataHub platform-wide gateway.
+	// This configures authentication, certificates, and domain settings for the gateway.
+	// +optional
+	Gateway *GatewayConfig `json:"gateway,omitempty"`
 }
 
 // DevFlags defines list of fields that can be used by developers to test customizations. This is not recommended
@@ -81,6 +85,24 @@ type TrustedCABundleSpec struct {
 	// ConfigMap .data.odh-ca-bundle.crt .
 	// +kubebuilder:default=""
 	CustomCABundle string `json:"customCABundle"`
+}
+
+// GatewayConfig defines gateway configuration for OpenDataHub platform
+type GatewayConfig struct {
+	// OIDC client configuration (used when cluster is in OIDC auth mode)
+	// +optional
+	OIDC *OIDCClientConfig `json:"oidc,omitempty"`
+}
+
+// OIDCClientConfig defines OIDC client configuration for the gateway
+type OIDCClientConfig struct {
+	// OIDC issuer URL
+	// +optional
+	IssuerURL string `json:"issuerURL,omitempty"`
+
+	// Reference to secret containing clientID and clientSecret for gateway OIDC client
+	// +optional
+	ClientSecretRef *corev1.SecretKeySelector `json:"clientSecretRef,omitempty"`
 }
 
 // DSCInitializationStatus defines the observed state of DSCInitialization.

@@ -25,6 +25,10 @@ package dscinitialization
 // +kubebuilder:rbac:groups="authorino.kuadrant.io",resources=authconfigs,verbs=*
 // +kubebuilder:rbac:groups="operator.authorino.kuadrant.io",resources=authorinos,verbs=*
 
+// Gateway API resources (managed by DSCI controller)
+// +kubebuilder:rbac:groups=gateway.networking.k8s.io,resources=gateways;gatewayclasses,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=cert-manager.io,resources=certificates,verbs=get;list;watch;create;update;patch;delete
+
 // TODO: move to monitoring own file
 // +kubebuilder:rbac:groups="route.openshift.io",resources=routers/metrics,verbs=get
 // +kubebuilder:rbac:groups="route.openshift.io",resources=routers/federate,verbs=get
