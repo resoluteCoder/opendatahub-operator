@@ -59,6 +59,8 @@ func (h *ServiceHandler) NewReconciler(ctx context.Context, mgr ctrl.Manager) er
 		OwnsGVK(gvk.KubernetesGateway).
 		OwnsGVK(gvk.GatewayClass).
 		WithAction(createGatewayInfrastructure).
+		WithAction(createKubeAuthProxyInfrastructure).
+		WithAction(createEnvoyFilter).
 		WithAction(template.NewAction()).
 		WithAction(deploy.NewAction(
 			deploy.WithCache(),
